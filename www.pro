@@ -14,9 +14,11 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    runner.cpp
+    runner.cpp \
+    highlighter.cpp
 
 HEADERS  += mainwindow.h \
-    runner.h
+    runner.h \
+    highlighter.h
 
 FORMS    += mainwindow.ui

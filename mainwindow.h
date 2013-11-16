@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
 #include <QMainWindow>
+#include "highlighter.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,6 +27,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     class Runner * runner_;
+    Highlighter* highlighter;
 };
 
 #endif // MAINWINDOW_H

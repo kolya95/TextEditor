@@ -3,14 +3,12 @@
 #include "runner.h"
 #include <QtCore>
 #include <QtGui>
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     runner_(0)
 {
     ui->setupUi(this);
-
 #ifdef Q_WS_X11
     ui->actionOpen->setIcon (QIcon::fromTheme ("document-open"));
     ui->actionSave->setIcon (QIcon::fromTheme ("document-save"));
@@ -30,16 +28,19 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionRedo->setIcon (QIcon(QApplication::applicationDirPath () + "/edit-redo"));
     ui->actionUndo->setIcon (QIcon(QApplication::applicationDirPath ()+ "/edit-undo"));
 #endif
-
     connect(ui->actionSave, SIGNAL(triggered()),
             this, SLOT(fileSave()));
-
     connect(ui->actionOpen, SIGNAL(triggered()),
             this, SLOT(fileOpen()));
     connect(ui->actionRun, SIGNAL(triggered()),
             this, SLOT(Run()));
 
+
     runner_ = new Runner(this);
+
+    highlighter = new Highlighter(ui->textEdit->document ());
+
+
     connect(runner_, SIGNAL(doOutput(QString)),
             this , SLOT(output(QString)));
     connect(runner_,SIGNAL(finished()),
@@ -83,13 +84,14 @@ void MainWindow::fileOpen ()
 
         }
         else{
-
+            /// error
         }
     }
 }
 
 void MainWindow::Run()
 {
+
     ui->actionStop->setEnabled (true);
     ui->textEdit->setEnabled (false);
     ui->actionCut->setEnabled (false);
@@ -97,7 +99,7 @@ void MainWindow::Run()
     ui->actionUndo->setEnabled (false);
     ui->actionRedo->setEnabled (false);
     ui->actionPaste->setEnabled (false);
-
+    ui->textOutput->setText ("");
     runner_->init(ui->textEdit->toPlainText ().split ('\n'));
     runner_->start ();
 }
