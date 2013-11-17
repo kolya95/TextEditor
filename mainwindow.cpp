@@ -54,7 +54,27 @@ MainWindow::MainWindow(QWidget *parent) :
             this,SLOT(reEnabled()));
     connect(ui->actionStop,SIGNAL(triggered()),
             this, SLOT(Stop()));
+    readSettings();
 
+}
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+        writeSettings();
+        event->accept();
+}
+void MainWindow::readSettings()
+{
+    QSettings settings("Settings", "TextEditor");
+    QPoint pos = settings.value("pos", QPoint(200, 200)).toPoint();
+    QSize size = settings.value("size", QSize(400, 400)).toSize();
+    resize(size);
+    move(pos);
+}
+void MainWindow::writeSettings()
+{
+    QSettings settings("Settings", "TextEditor");
+    settings.setValue("pos", pos());
+    settings.setValue("size", size());
 }
 
 void MainWindow::fileSave ()

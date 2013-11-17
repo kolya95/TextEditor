@@ -2,7 +2,6 @@
 #define MAINWINDOW_H
 #include <QMainWindow>
 #include "highlighter.h"
-
 namespace Ui {
 class MainWindow;
 }
@@ -15,6 +14,8 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+protected:
+    void closeEvent(QCloseEvent *event);
 public slots:
     void fileSave();
     void fileOpen();
@@ -27,6 +28,8 @@ private:
     Ui::MainWindow *ui;
     class Runner * runner_;
     Highlighter* highlighter;
+    void readSettings();
+    void writeSettings();
 
 };
 
