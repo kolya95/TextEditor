@@ -28,6 +28,12 @@ private:
     Ui::MainWindow *ui;
     class Runner * runner_;
     Highlighter* highlighter;
+
+
+
+    QTextCursor* cursor_;
+    bool undoAv, redoAv;
+
     void readSettings();
     void writeSettings();
 

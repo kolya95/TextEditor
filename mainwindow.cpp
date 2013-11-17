@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
     runner_ = new Runner(this);
 
     highlighter = new Highlighter(ui->textEdit->document ());
-
+    cursor_ = new QTextCursor();
 
     connect(runner_, SIGNAL(doOutput(QString)),
             this , SLOT(output(QString)));
@@ -55,7 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionStop,SIGNAL(triggered()),
             this, SLOT(Stop()));
     readSettings();
-
 }
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -95,7 +94,6 @@ void MainWindow::fileSave ()
         }
     }
 }
-
 void MainWindow::fileOpen ()
 {
     const QString fn = QFileDialog::getOpenFileName (this,tr("Set file name"),"",tr("Text files (*.txt)"));
@@ -122,11 +120,19 @@ void MainWindow::Run()
 
     ui->actionStop->setEnabled (true);
     ui->textEdit->setEnabled (false);
-    ui->actionCut->setEnabled (false);
-    ui->actionOpen->setEnabled (false);
+    undoAv = ui->actionUndo->isEnabled ();
+    redoAv = ui->actionRedo->isEnabled ();
+    QTextCursor cursor = ui->textEdit->textCursor();
+    *cursor_ = cursor;
+    cursor.clearSelection();
+    ui->textEdit->setTextCursor(cursor);
+    ui->actionPaste->setEnabled (false);
+
     ui->actionUndo->setEnabled (false);
     ui->actionRedo->setEnabled (false);
-    ui->actionPaste->setEnabled (false);
+    ui->actionRun->setEnabled (false);
+    ui->actionOpen->setEnabled (false);
+
     ui->textOutput->setText ("");
     runner_->init(ui->textEdit->toPlainText ().split ('\n'));
     runner_->start ();
@@ -144,11 +150,12 @@ MainWindow::~MainWindow()
 void MainWindow::reEnabled()
 {
     ui->actionStop->setEnabled (false);
+    ui->textEdit->setTextCursor(*cursor_);
     ui->textEdit->setEnabled (true);
-    ui->actionCut->setEnabled (true);
+    ui->actionRun->setEnabled (true);
     ui->actionOpen->setEnabled (true);
-    ui->actionUndo->setEnabled (true);
-    ui->actionRedo->setEnabled (true);
+    ui->actionUndo->setEnabled (undoAv);
+    ui->actionRedo->setEnabled (redoAv);
     ui->actionPaste->setEnabled (true);
 }
 
