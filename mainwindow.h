@@ -15,7 +15,6 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
 public slots:
     void fileSave();
     void fileOpen();
@@ -23,11 +22,12 @@ public slots:
     void output(const QString & text);
     void reEnabled();
     void Stop();
-    
+
 private:
     Ui::MainWindow *ui;
     class Runner * runner_;
     Highlighter* highlighter;
+
 };
 
 #endif // MAINWINDOW_H

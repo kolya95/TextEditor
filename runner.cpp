@@ -23,14 +23,10 @@ void Runner::init (const QStringList &lines)
 void Runner::stop ()
 {
     QMutexLocker lock(mutex_);
-
     mustrun_ = false;
-
 }
-
 void Runner::run()
 {
-
     for(int i = 0; i < lines.size (); i++)
     {
         mutex_->lock ();

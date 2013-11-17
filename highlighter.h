@@ -20,7 +20,13 @@ protected:
 private:
 
     QVector<HighlightingRule> highlightingRules;
+
     QTextCharFormat keywordFormat;
+    QTextCharFormat singleLineCommentFormat;
+    QTextCharFormat quotationFormat;
+
+    QRegExp quotation;
+
 };
 
 #endif

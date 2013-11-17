@@ -23,6 +23,23 @@ Highlighter::Highlighter(QTextDocument *parent)
         rule.format = keywordFormat;
         highlightingRules.append(rule);
     }
+    singleLineCommentFormat.setForeground(Qt::gray);
+    rule.pattern = QRegExp("#[^\n]*");
+    rule.format = singleLineCommentFormat;
+    highlightingRules.append(rule);
+
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\'.*\'");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+    quotationFormat.setForeground(Qt::darkGreen);
+    rule.pattern = QRegExp("\".*\"");
+    rule.format = quotationFormat;
+    highlightingRules.append(rule);
+
+
+    quotation = QRegExp("\"");
 }
 void Highlighter::highlightBlock(const QString &text)
 {
@@ -36,5 +53,27 @@ void Highlighter::highlightBlock(const QString &text)
             setFormat(index, length, rule.format);
             index = text.indexOf(expression, index + length);
         }
+    }
+
+
+    setCurrentBlockState(0);
+
+    int startIndex = 0;
+    if (previousBlockState() != 1)
+        startIndex = text.indexOf(quotation);
+    while (startIndex >= 0) {
+        int endIndex = text.indexOf(quotation, startIndex);
+        int Length;
+        if (endIndex == -1) {
+            setCurrentBlockState(1);
+            Length = text.length() - startIndex;
+        }
+        else {
+             Length = endIndex - startIndex
+             + quotation.matchedLength();
+        }
+        setFormat(startIndex, Length, quotationFormat);
+        startIndex = text.indexOf(quotation,
+                                           startIndex + Length);
     }
 }

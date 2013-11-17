@@ -3,6 +3,13 @@
 #include "runner.h"
 #include <QtCore>
 #include <QtGui>
+
+
+
+
+#include "linenumber.h" //sadasd
+
+
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
@@ -47,6 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
             this,SLOT(reEnabled()));
     connect(ui->actionStop,SIGNAL(triggered()),
             this, SLOT(Stop()));
+
 }
 
 void MainWindow::fileSave ()
