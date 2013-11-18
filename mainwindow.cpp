@@ -78,11 +78,24 @@ void MainWindow::writeSettings()
 
 void MainWindow::fileSave ()
 {
-    const QString fn = QFileDialog::getSaveFileName (this, tr("Select file name"),
-                                  "", tr("Text files (*.txt)"));
+    QString filter;
+    filter = tr("Text files (*.txt)");
+    QString a;
+    QString fn = QFileDialog::getSaveFileName (this, tr("Select file name"),
+                                  "", filter,&a);
+    QString sufTxt = ".txt";
+    QRegExp suffix (".*" + sufTxt);
+    if(a.compare (filter) == 0)
+    {
+        if(suffix.indexIn (fn) == -1 && fn.length ()>0)
+        {
+            fn += sufTxt;
+        }
+    }
     qDebug () << "File save to " << fn;
     if (fn.length () > 0) {
         QFile f(fn);
+
         if (f.open (QIODevice::WriteOnly)) {
             QTextStream ts(&f);
             ts.setCodec ("UTF-8"); // UTF-8, WINDOWS-1251, OEM-866, KOI8-R
@@ -104,10 +117,8 @@ void MainWindow::fileOpen ()
         {
             QTextStream ts(&f);
             ts.setCodec ("UTF-8");
-            //QString text = ts.readAll ();
             ui->textEdit->setText (ts.readAll ());
             f.close ();
-
         }
         else{
             /// error
