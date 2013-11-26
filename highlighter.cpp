@@ -23,23 +23,22 @@ Highlighter::Highlighter(QTextDocument *parent)
         rule.format = keywordFormat;
         highlightingRules.append(rule);
     }
-    singleLineCommentFormat.setForeground(Qt::gray);
+
+    singleLineCommentFormat.setForeground(Qt::yellow);
     rule.pattern = QRegExp("#[^\n]*");
     rule.format = singleLineCommentFormat;
-    highlightingRules.append(rule);
+    //highlightingRules.append(rule);
 
     quotationFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegExp("\'.*\'");
     rule.format = quotationFormat;
-    highlightingRules.append(rule);
+    //highlightingRules.append(rule);
 
     quotationFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegExp("\".*\"");
     rule.format = quotationFormat;
-    highlightingRules.append(rule);
+   // highlightingRules.append(rule);
 
-
-    quotation = QRegExp("\"");
 }
 void Highlighter::highlightBlock(const QString &text)
 {
@@ -54,26 +53,70 @@ void Highlighter::highlightBlock(const QString &text)
             index = text.indexOf(expression, index + length);
         }
     }
-
-
-    setCurrentBlockState(0);
-
-    int startIndex = 0;
-    if (previousBlockState() != 1)
-        startIndex = text.indexOf(quotation);
-    while (startIndex >= 0) {
-        int endIndex = text.indexOf(quotation, startIndex);
-        int Length;
-        if (endIndex == -1) {
-            setCurrentBlockState(1);
-            Length = text.length() - startIndex;
-        }
-        else {
-             Length = endIndex - startIndex
-             + quotation.matchedLength();
-        }
-        setFormat(startIndex, Length, quotationFormat);
-        startIndex = text.indexOf(quotation,
-                                           startIndex + Length);
+    QVector<lexeme> rules = lexAutomat(text);
+    foreach(lexeme rule, rules)
+    {
+        setFormat(rule.pos_, rule.len_, rule.format);
     }
+}
+QVector<lexeme> Highlighter::lexAutomat(const QString& text)
+{
+    unsigned int state = 0; // 0 - нач сост, 1 - состояние комментария, 2 - состояние строки, 3 - состояние спецсимвола
+    QVector<lexeme> result;
+    lexeme temp;
+    QRegExp expression = QRegExp("#[^\n]*");
+    int index = 0;
+    for(int i = 0; i < text.length(); i++)
+    {
+        switch(state)
+        {
+        case 0:
+            temp.pos_ = i;
+            if(text[i] == '\"')
+                state = 2;
+            else if(text[i] == '#')
+                state = 1;
+            else
+                state = 0;
+           break;
+        case 1:
+            temp.len_++;
+            temp.type_ = 1;
+            temp.format = singleLineCommentFormat;
+            index = text.indexOf(expression,temp.pos_);
+            temp.len_ = expression.matchedLength();
+            i = index;
+            result.push_back(temp);
+            state = 0;
+            temp.pos_ = 0;
+            temp.len_ = 1;
+            temp.type_ = 0;
+            break;
+        case 2:
+            temp.len_++;
+            temp.type_ = 2;
+            temp.format = quotationFormat;
+            if(text[i] == '\\')
+               state = 3;
+
+            if(text[i] == '\"')
+            {
+                temp.len_++;
+                result.push_back(temp);
+                state = 0;
+                temp.pos_ = 0;
+                temp.len_ = 1;
+                temp.type_ = 0;
+            }
+            break;
+        case 3:
+            temp.len_++;
+            state = 2;
+            break;
+        default:
+            /// error
+            break;
+        }
+    }
+    return result;
 }

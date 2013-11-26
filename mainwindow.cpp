@@ -4,12 +4,6 @@
 #include <QtCore>
 #include <QtGui>
 
-
-
-
-#include "linenumber.h" //sadasd
-
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
