@@ -24,21 +24,9 @@ Highlighter::Highlighter(QTextDocument *parent)
         highlightingRules.append(rule);
     }
 
-    singleLineCommentFormat.setForeground(Qt::yellow);
-    rule.pattern = QRegExp("#[^\n]*");
-    rule.format = singleLineCommentFormat;
-    //highlightingRules.append(rule);
-
+    singleLineCommentFormat.setForeground(Qt::gray);
     quotationFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp("\'.*\'");
-    rule.format = quotationFormat;
-    //highlightingRules.append(rule);
-
     quotationFormat.setForeground(Qt::darkGreen);
-    rule.pattern = QRegExp("\".*\"");
-    rule.format = quotationFormat;
-   // highlightingRules.append(rule);
-
 }
 void Highlighter::highlightBlock(const QString &text)
 {
@@ -65,7 +53,6 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
     QVector<lexeme> result;
     lexeme temp;
     QRegExp expression = QRegExp("#[^\n]*");
-    int index = 0;
     for(int i = 0; i < text.length(); i++)
     {
         switch(state)
@@ -73,9 +60,19 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
         case 0:
             temp.pos_ = i;
             if(text[i] == '\"')
+            {
+                temp.type_ = 2;
+                temp.format = quotationFormat;
+                result.push_back(temp);
                 state = 2;
+            }
             else if(text[i] == '#')
+            {
+                temp.type_ = 1;
+                temp.format = singleLineCommentFormat;
+                result.push_back(temp);
                 state = 1;
+            }
             else
                 state = 0;
            break;
@@ -83,14 +80,16 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
             temp.len_++;
             temp.type_ = 1;
             temp.format = singleLineCommentFormat;
-            index = text.indexOf(expression,temp.pos_);
+            text.indexOf(expression,temp.pos_);
             temp.len_ = expression.matchedLength();
-            i = index;
             result.push_back(temp);
-            state = 0;
-            temp.pos_ = 0;
-            temp.len_ = 1;
-            temp.type_ = 0;
+            if(text[i] == '\n')
+            {
+                state = 0;
+                temp.pos_ = 0;
+                temp.len_ = 1;
+                temp.type_ = 0;
+            }
             break;
         case 2:
             temp.len_++;
