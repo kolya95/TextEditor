@@ -25,8 +25,7 @@ Highlighter::Highlighter(QTextDocument *parent)
     }
 
     singleLineCommentFormat.setForeground(Qt::gray);
-    quotationFormat.setForeground(Qt::darkGreen);
-    quotationFormat.setForeground(Qt::darkGreen);
+    quotationFormat.setForeground(Qt::red);
 }
 void Highlighter::highlightBlock(const QString &text)
 {
@@ -52,6 +51,7 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
     unsigned int state = 0; // 0 - нач сост, 1 - состояние комментария, 2 - состояние строки, 3 - состояние спецсимвола
     QVector<lexeme> result;
     lexeme temp;
+    QChar str;
     QRegExp expression = QRegExp("#[^\n]*");
     for(int i = 0; i < text.length(); i++)
     {
@@ -59,16 +59,15 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
         {
         case 0:
             temp.pos_ = i;
-            if(text[i] == '\"')
+            if(text[i] == '\"' || text[i] == '\'')
             {
-                temp.type_ = 2;
+                str = text[i];
                 temp.format = quotationFormat;
                 result.push_back(temp);
                 state = 2;
             }
             else if(text[i] == '#')
             {
-                temp.type_ = 1;
                 temp.format = singleLineCommentFormat;
                 result.push_back(temp);
                 state = 1;
@@ -78,7 +77,6 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
            break;
         case 1:
             temp.len_++;
-            temp.type_ = 1;
             temp.format = singleLineCommentFormat;
             text.indexOf(expression,temp.pos_);
             temp.len_ = expression.matchedLength();
@@ -88,27 +86,24 @@ QVector<lexeme> Highlighter::lexAutomat(const QString& text)
                 state = 0;
                 temp.pos_ = 0;
                 temp.len_ = 1;
-                temp.type_ = 0;
             }
             break;
         case 2:
             temp.len_++;
-            temp.type_ = 2;
             temp.format = quotationFormat;
+            setFormat(i, 1, quotationFormat);
             if(text[i] == '\\')
                state = 3;
-
-            if(text[i] == '\"')
+            if(text[i] == str)
             {
-                temp.len_++;
                 result.push_back(temp);
                 state = 0;
                 temp.pos_ = 0;
                 temp.len_ = 1;
-                temp.type_ = 0;
             }
             break;
         case 3:
+            setFormat(i, 1, quotationFormat);
             temp.len_++;
             state = 2;
             break;

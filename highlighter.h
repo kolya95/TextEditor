@@ -11,11 +11,11 @@ struct HighlightingRule
 };
 struct lexeme
 {
-    unsigned int pos_, len_, type_; // type == 1 - comment, type == 2 - str, type == 0 - std
+    unsigned int pos_, len_;
     QTextCharFormat format;
     lexeme()
     {
-        pos_ = type_ = 0;
+        pos_ = 0;
         len_ = 1;
     }
 };
