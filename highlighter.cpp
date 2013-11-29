@@ -17,7 +17,7 @@ Highlighter::Highlighter(QTextDocument *parent)
     <<"\\bas\\b"<<"\\belif\\b"<<"\\bif\\b"<<"\\bor\\b"<<"\\byield\\b"
     <<"\\bassert\\b"<<"\\belse\\b"<<"\\bimport\\b"<<"\\bpass\\b"
     <<"\\bbreak\\b"<<"\\bexcept\\b"<<"\\bin\\b"<<"\\braise\\b";
-    foreach (QString pattern, keywordPatterns)
+    Q_FOREACH (QString pattern, keywordPatterns)
     {
         rule.pattern = QRegExp(pattern);
         rule.format = keywordFormat;
@@ -29,7 +29,7 @@ Highlighter::Highlighter(QTextDocument *parent)
 }
 void Highlighter::highlightBlock(const QString &text)
 {
-    foreach (HighlightingRule rule, highlightingRules)
+    Q_FOREACH (HighlightingRule rule, highlightingRules)
     {
         QRegExp expression(rule.pattern);
         int index = text.indexOf(expression);
@@ -41,7 +41,7 @@ void Highlighter::highlightBlock(const QString &text)
         }
     }
     QVector<lexeme> rules = lexAutomat(text);
-    foreach(lexeme rule, rules)
+    Q_FOREACH(lexeme rule, rules)
     {
         setFormat(rule.pos_, rule.len_, rule.format);
     }

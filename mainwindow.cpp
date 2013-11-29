@@ -139,7 +139,7 @@ void MainWindow::Run()
     ui->actionOpen->setEnabled (false);
 
     ui->textOutput->setText ("");
-    runner_->init(ui->textEdit->toPlainText ().split ('\n'));
+    runner_->init(ui->textEdit->toPlainText ());
     runner_->start ();
 }
 

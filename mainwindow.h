@@ -16,7 +16,7 @@ public:
     ~MainWindow();
 protected:
     void closeEvent(QCloseEvent *event);
-public slots:
+public Q_SLOTS:
     void fileSave();
     void fileOpen();
     void Run();
