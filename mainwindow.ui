@@ -16,7 +16,13 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTextEdit" name="textEdit"/>
+     <widget class="QTextEdit" name="textEdit">
+      <property name="font">
+       <font>
+        <family>Monospace</family>
+       </font>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="QTextEdit" name="textOutput">
@@ -33,7 +39,7 @@
      <x>0</x>
      <y>0</y>
      <width>559</width>
-     <height>29</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">

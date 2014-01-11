@@ -16,7 +16,7 @@ Runner::~Runner ()
 {
     delete mutex_;
 
-    delete[] programmText;
+    //delete[] programmText;
     //Py_Finalize();
 }
 
@@ -54,10 +54,10 @@ void Runner::pyImport()
     //char* dir;
     QString path = QCoreApplication::applicationDirPath();
     path+= "/../TextEditor/python";
-    qDebug()<<path;
+    //qDebug()<<path;
     path = QDir::cleanPath(path);
     path = QDir::toNativeSeparators(path);
-    qDebug()<<path;
+    //qDebug()<<path;
     /*QString QDir::cleanPath ( const QString & path ) [static]
     -- приведение пути к нормализованному виду
     QString QDir::toNativeSeparators ( const QString & pathName ) [static]

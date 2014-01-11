@@ -42,6 +42,8 @@ MainWindow::MainWindow(QWidget *parent) :
     highlighter = new Highlighter(ui->textEdit->document ());
     cursor_ = new QTextCursor();
 
+    cur = ui->textEdit->textCursor();
+
     connect(runner_, SIGNAL(doOutput(QString)),
             this , SLOT(output(QString)));
     connect(runner_,SIGNAL(finished()),
@@ -49,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionStop,SIGNAL(triggered()),
             this, SLOT(Stop()));
     readSettings();
+    ui->textEdit->setFocusPolicy(Qt::StrongFocus);
+    ui->textEdit->setTabStopWidth(28); //ширина 4-х пробелов(чтобы курсор не мелькал когда заменяется на пробелы)
+    ui->textOutput->setTabStopWidth(28);
+
 }
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -86,7 +92,6 @@ void MainWindow::fileSave ()
             fn += sufTxt;
         }
     }
-    qDebug () << "File save to " << fn;
     if (fn.length () > 0) {
         QFile f(fn);
 
@@ -167,4 +172,82 @@ void MainWindow::reEnabled()
 void MainWindow::Stop ()
 {
     runner_->stop ();
+}
+
+void MainWindow::keyReleaseEvent( QKeyEvent * e )
+{
+    if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter||e->key()==Qt::Key_Backspace||e->key()==Qt::Key_Tab)
+    {
+        cur = ui->textEdit->textCursor();
+        if(cur.position()>1)
+        {
+            if ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter))
+            {
+                int indent_ = 0;
+                QString txt = ui->textEdit->toPlainText();
+                if(txt[cur.position()-2]==':')
+                {
+                    indent_++;
+                }
+                QString line;
+                int i = cur.position()-2;
+                while(txt[i]!='\n')
+                {
+                    line.insert(0,txt[i]);
+                    i--;
+                    if(i<0)
+                        break;
+                }
+                for(i = 0; i<line.length();i++)
+                {
+                    if(line[i]!=' ')
+                        break;
+                    if(i%4==0)
+                        indent_++;
+                }
+                for(i = 0; i<indent_; i++)
+                {
+                    cur.insertText("    ");
+                }
+                return;
+            }
+        }
+        if(e->key() == Qt::Key_Tab)
+        {
+            int b = ui->textEdit->toPlainText().indexOf('\t');
+            if(b>=0)
+            {
+                cur.setPosition(b);
+                cur.deleteChar ();
+                cur.insertText("    ");
+            }
+        }
+        if(e->key()==Qt::Key_Backspace)
+        {
+            bool spaces = true;
+            int counter = 0;
+            QString text = ui->textEdit->toPlainText();
+            for(int k = cur.position();;k--)
+            {
+                if(k==0||text[k-1]=='\n')
+                    break;
+                counter++;
+                if(text[k-1]!=' ')
+                {
+                    spaces = false;
+                    break;
+                }
+            }
+            if(spaces&&counter>2)
+            {
+                for(int k = 0; k<3; k++)
+                    cur.deletePreviousChar();
+
+            }
+        }
+    }
+    else
+    {
+        return;
+    }
 }

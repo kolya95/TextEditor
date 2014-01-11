@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 #include <QMainWindow>
 #include "highlighter.h"
+#include "indent.h"
 namespace Ui {
 class MainWindow;
 }
@@ -16,6 +17,7 @@ public:
     ~MainWindow();
 protected:
     void closeEvent(QCloseEvent *event);
+    void keyReleaseEvent ( QKeyEvent * e );
 public Q_SLOTS:
     void fileSave();
     void fileOpen();
@@ -29,9 +31,7 @@ private:
     class Runner * runner_;
     Highlighter* highlighter;
 
-
-
-    QTextCursor* cursor_;
+    QTextCursor* cursor_, cur;
     bool undoAv, redoAv;
 
     void readSettings();
