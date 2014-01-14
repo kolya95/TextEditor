@@ -42,10 +42,12 @@ MainWindow::MainWindow(QWidget *parent) :
     highlighter = new Highlighter(ui->textEdit->document ());
     cursor_ = new QTextCursor();
 
-    cur = ui->textEdit->textCursor();
+    cur = new QTextCursor();
 
     connect(runner_, SIGNAL(doOutput(QString)),
             this , SLOT(output(QString)));
+    connect(runner_, SIGNAL(doErrOutput(QString)),
+            this , SLOT(errOutput(QString)));
     connect(runner_,SIGNAL(finished()),
             this,SLOT(reEnabled()));
     connect(ui->actionStop,SIGNAL(triggered()),
@@ -150,9 +152,20 @@ void MainWindow::Run()
 
 void MainWindow::output (const QString &text)
 {
-    ui->textOutput->append (text);
+    QString txt = ui->textOutput->toPlainText();
+    txt.remove(txt.length(),1);
+    txt.append(text);
+    ui->textOutput->setPlainText(txt);
 }
+void MainWindow::errOutput (const QString &text)
+{
 
+    QString txt = ui->textOutput->toPlainText();
+    txt.remove(txt.length(),1);
+    txt.append(text);
+    ui->textOutput->setPlainText(txt);
+
+}
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -178,19 +191,19 @@ void MainWindow::keyReleaseEvent( QKeyEvent * e )
 {
     if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter||e->key()==Qt::Key_Backspace||e->key()==Qt::Key_Tab)
     {
-        cur = ui->textEdit->textCursor();
-        if(cur.position()>1)
+        *cur = ui->textEdit->textCursor();
+        if(cur->position()>1)
         {
             if ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter))
             {
                 int indent_ = 0;
                 QString txt = ui->textEdit->toPlainText();
-                if(txt[cur.position()-2]==':')
+                if(txt[cur->position()-2]==':')
                 {
                     indent_++;
                 }
                 QString line;
-                int i = cur.position()-2;
+                int i = cur->position()-2;
                 while(txt[i]!='\n')
                 {
                     line.insert(0,txt[i]);
@@ -202,12 +215,11 @@ void MainWindow::keyReleaseEvent( QKeyEvent * e )
                 {
                     if(line[i]!=' ')
                         break;
-                    if(i%4==0)
-                        indent_++;
+                    indent_++;
                 }
-                for(i = 0; i<indent_; i++)
+                for(i = 0; i<indent_/4; i++)
                 {
-                    cur.insertText("    ");
+                    cur->insertText("    ");
                 }
                 return;
             }
@@ -217,17 +229,27 @@ void MainWindow::keyReleaseEvent( QKeyEvent * e )
             int b = ui->textEdit->toPlainText().indexOf('\t');
             if(b>=0)
             {
-                cur.setPosition(b);
-                cur.deleteChar ();
-                cur.insertText("    ");
+                cur->setPosition(b);
+                cur->deleteChar ();
+                cur->insertText("    ");
             }
         }
         if(e->key()==Qt::Key_Backspace)
         {
             bool spaces = true;
             int counter = 0;
+            ui->textEdit->undo();
+            *cur = ui->textEdit->textCursor();
             QString text = ui->textEdit->toPlainText();
-            for(int k = cur.position();;k--)
+            if(text[cur->position()-1]!=' ')
+            {
+                ui->textEdit->redo();
+                return;
+            }
+            ui->textEdit->redo();
+            text = ui->textEdit->toPlainText();
+            *cur = ui->textEdit->textCursor();
+            for(int k = cur->position();;k--)
             {
                 if(k==0||text[k-1]=='\n')
                     break;
@@ -241,9 +263,10 @@ void MainWindow::keyReleaseEvent( QKeyEvent * e )
             if(spaces&&counter>2)
             {
                 for(int k = 0; k<3; k++)
-                    cur.deletePreviousChar();
+                    cur->deletePreviousChar();
 
             }
+
         }
     }
     else

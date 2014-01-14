@@ -18,9 +18,11 @@ public:
     ~Runner();
 
     static PyObject* pythonPrint(PyObject*,PyObject* args);
+    static PyObject* pythonErrPrint(PyObject*,PyObject* args);
     static void pyImport();
 Q_SIGNALS:
     void doOutput(const QString &);
+    void doErrOutput(const QString &);
     
 public Q_SLOTS:
 

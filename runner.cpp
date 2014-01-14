@@ -41,12 +41,23 @@ PyObject* Runner::pythonPrint(PyObject *, PyObject *args)
     PyObject * msg = PyTuple_GetItem(args, 0);
     wchar_t * wcs = PyUnicode_AsWideCharString(msg, NULL);
        QString qs = QString::fromWCharArray(wcs);
-       //qDebug() << qs;
        Q_EMIT RUN->doOutput(qs);
        PyMem_Free(wcs);
        Py_INCREF(Py_None);
        return Py_None;
 }
+
+PyObject* Runner::pythonErrPrint(PyObject *, PyObject *args)
+{
+    PyObject * msg = PyTuple_GetItem(args, 0);
+    wchar_t * wcs = PyUnicode_AsWideCharString(msg, NULL);
+    QString qs = QString::fromWCharArray(wcs);
+    Q_EMIT RUN->doErrOutput(qs);
+    PyMem_Free(wcs);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 void Runner::pyImport()
 {
     PyObject * sysPath = PySys_GetObject("path");
@@ -91,6 +102,7 @@ static PyObject* init_functions()
 {
     static PyMethodDef _myMethods[] = {
        { "myPrint", Runner::pythonPrint, METH_VARARGS, ""},
+       { "myErrPrint", Runner::pythonErrPrint, METH_VARARGS, ""},
        { NULL, NULL, 0, NULL }
     };
 
