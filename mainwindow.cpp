@@ -200,7 +200,7 @@ void MainWindow::keyReleaseEvent( QKeyEvent * e )
                 QString txt = ui->textEdit->toPlainText();
                 if(txt[cur->position()-2]==':')
                 {
-                    indent_++;
+                    indent_+=4;
                 }
                 QString line;
                 int i = cur->position()-2;
