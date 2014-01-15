@@ -30,7 +30,7 @@ private:
     PyObject * runModule;
     class MainWindow * mw_;
     QStringList lines;
-    char* programmText;
+    QString programmText;
     PyThreadState* interpretator;
     QTextEdit * out;
     bool mustrun_;

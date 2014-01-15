@@ -23,18 +23,7 @@ Runner::~Runner ()
 void Runner::init (const QString& lines)
 {
     mustrun_ = true;
-    try{
-        programmText = new char[lines.size()+1];
-        for(int i = 0; i<lines.size(); i++)
-        {
-            programmText[i] = lines[i].toAscii();
-        }
-        programmText[lines.size()] = '\0';
-    }
-    catch(std::bad_alloc&)
-    {
-        ///error
-    }
+    programmText = lines;
 }
 PyObject* Runner::pythonPrint(PyObject *, PyObject *args)
 {
@@ -61,7 +50,7 @@ PyObject* Runner::pythonErrPrint(PyObject *, PyObject *args)
 void Runner::pyImport()
 {
     PyObject * sysPath = PySys_GetObject("path");
-    char * dir;
+    char dir[512]; qMemSet(dir, 0, sizeof(dir));
     //char* dir;
     QString path = QCoreApplication::applicationDirPath();
     path+= "/../TextEditor/python";
@@ -74,7 +63,7 @@ void Runner::pyImport()
     QString QDir::toNativeSeparators ( const QString & pathName ) [static]
     -- для Unix не имеет значения, для Windows -- меняет / на \
     */
-    dir = path.toUtf8().data();
+    qMemCopy(dir, path.toUtf8().constData(), path.toUtf8().size());
 
     PyObject * myFunctionsPath = PyUnicode_FromString(dir);
     PyList_Insert(sysPath, 0, myFunctionsPath);
@@ -124,7 +113,11 @@ void Runner::run()
     bool b = mustrun_;
     mutex_->unlock ();
    if (b) {
-       PyObject * pyProgrammText = PyUnicode_FromString(programmText);
+       wchar_t * buffer = (wchar_t*) malloc((1+programmText.length()) * sizeof(wchar_t));
+       buffer[programmText.length()] = L'\0';
+       programmText.toWCharArray(buffer);
+       PyObject * pyProgrammText = PyUnicode_FromUnicode(buffer, programmText.length());
+       free(buffer);
         //PyRun_SimpleString(programmText);
        PyObject* func = PyObject_GetAttrString(runModule, "func");
        // возвращает объект-функцию из модуля, либо 0, если функция в модуле не найдена
