@@ -19,7 +19,7 @@ class MyErrIO(io.IOBase):
         except ImportError:
             self.write = sys.__stderr__.write 
 
-sys.stdout = MyErrIO();
+sys.stdout = MyIO();
 sys.stderr = MyErrIO();
 
 def func(s):
