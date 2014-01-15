@@ -152,16 +152,24 @@ void MainWindow::Run()
 
 void MainWindow::output (const QString &text)
 {
-    QString html = text;
-    html.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace(' ', "&nbsp;");
-    ui->textOutput->append("<font color='black'>"+html+"</font>");
+    QTextCursor cursor = ui->textOutput->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    QTextCharFormat fmt = cursor.charFormat();
+    fmt.setForeground(QColor(Qt::black));
+    cursor.setCharFormat(fmt);
+    cursor.insertText(text);
 }
+
 void MainWindow::errOutput (const QString &text)
 {
-    QString html = text;
-    html.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace(' ', "&nbsp;");
-    ui->textOutput->append("<font color='red'>"+html+"</font>");
+    QTextCursor cursor = ui->textOutput->textCursor();
+    cursor.movePosition(QTextCursor::End);
+    QTextCharFormat fmt = cursor.charFormat();
+    fmt.setForeground(QColor(Qt::red));
+    cursor.setCharFormat(fmt);
+    cursor.insertText(text);
 }
+
 MainWindow::~MainWindow()
 {
     delete ui;
