@@ -152,19 +152,15 @@ void MainWindow::Run()
 
 void MainWindow::output (const QString &text)
 {
-    QString txt = ui->textOutput->toPlainText();
-    txt.remove(txt.length(),1);
-    txt.append(text);
-    ui->textOutput->setPlainText(txt);
+    QString html = text;
+    html.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace(' ', "&nbsp;");
+    ui->textOutput->append("<font color='black'>"+html+"</font>");
 }
 void MainWindow::errOutput (const QString &text)
 {
-
-    QString txt = ui->textOutput->toPlainText();
-    txt.remove(txt.length(),1);
-    txt.append(text);
-    ui->textOutput->setPlainText(txt);
-
+    QString html = text;
+    html.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace(' ', "&nbsp;");
+    ui->textOutput->append("<font color='red'>"+html+"</font>");
 }
 MainWindow::~MainWindow()
 {
