@@ -4,6 +4,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <Python.h>
+#include "actorinterface.h"
 class Runner : public QThread
 {
     Q_OBJECT
@@ -19,6 +20,7 @@ public:
 
     static PyObject* pythonPrint(PyObject*,PyObject* args);
     static PyObject* pythonErrPrint(PyObject*,PyObject* args);
+    static PyObject* py_call(PyObject*,PyObject* args);
     static void pyImport();
 Q_SIGNALS:
     void doOutput(const QString &);
@@ -35,8 +37,14 @@ private:
     QTextEdit * out;
     bool mustrun_;
     QMutex * mutex_;
+
+
+
 //    static PyObject* init_functions();
 };
+
+
+
 static PyObject* init_functions();
 static Runner* RUN;
 #endif // RUNNER_H

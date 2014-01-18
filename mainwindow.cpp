@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "runner.h"
+
+#include "kumirinterface.h"
 #include <QtCore>
 #include <QtGui>
 
@@ -57,6 +59,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->textEdit->setTabStopWidth(28); //ширина 4-х пробелов(чтобы курсор не мелькал когда заменяется на пробелы)
     ui->textOutput->setTabStopWidth(28);
 
+
+
+
+    QString path = QCoreApplication::applicationDirPath()+"/../TextEditor/";
+    path = QDir::cleanPath(path);
+    path = QDir::toNativeSeparators(path);
+    k = new kumirInterface(path,this);
 }
 void MainWindow::closeEvent(QCloseEvent *event)
 {

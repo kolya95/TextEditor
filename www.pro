@@ -16,10 +16,14 @@ DEFINES += QT_NO_KEYWORDS
 SOURCES += main.cpp\
         mainwindow.cpp \
     runner.cpp \
-    highlighter.cpp
+    highlighter.cpp \
+    kumirinterface.cpp
 
 HEADERS  += mainwindow.h \
     runner.h \
-    highlighter.h
+    highlighter.h \
+    actorinterface.h \
+    kumirinterface.h \
+    plugininterface.h
 
 FORMS    += mainwindow.ui

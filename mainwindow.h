@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 #include <QMainWindow>
 #include "highlighter.h"
+#include "actorinterface.h"
+#include "kumirinterface.h"
 namespace Ui {
 class MainWindow;
 }
@@ -33,6 +35,9 @@ private:
 
     QTextCursor* cursor_, *cur;
     bool undoAv, redoAv;
+
+
+    class kumirInterface* k;
 
     void readSettings();
     void writeSettings();

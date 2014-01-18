@@ -46,6 +46,16 @@ PyObject* Runner::pythonErrPrint(PyObject *, PyObject *args)
     Py_INCREF(Py_None);
     return Py_None;
 }
+PyObject* Runner::py_call(PyObject *, PyObject *args)
+{
+    PyObject * msg = PyTuple_GetItem(args, 0);
+    wchar_t * wcs = PyUnicode_AsWideCharString(msg, NULL);
+    QString qs = QString::fromWCharArray(wcs);
+    Q_EMIT RUN->doErrOutput(qs);
+    PyMem_Free(wcs);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
 
 void Runner::pyImport()
 {
@@ -92,6 +102,7 @@ static PyObject* init_functions()
     static PyMethodDef _myMethods[] = {
        { "myPrint", Runner::pythonPrint, METH_VARARGS, ""},
        { "myErrPrint", Runner::pythonErrPrint, METH_VARARGS, ""},
+        {"actor_call",Runner::py_call,METH_VARARGS,""},
        { NULL, NULL, 0, NULL }
     };
 
@@ -101,6 +112,7 @@ static PyObject* init_functions()
     };
     return PyModule_Create(&_myModule);
 }
+
 
 void Runner::run()
 {
