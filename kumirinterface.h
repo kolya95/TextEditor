@@ -9,6 +9,8 @@ class kumirInterface
     QVector<Shared::ActorInterface *> instanced;
 public:
     kumirInterface(const QString& path, QMainWindow* ui);
+
+
 };
 
 #endif // KUMIRINTERFACE_H

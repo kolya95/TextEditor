@@ -25,6 +25,7 @@ class Highlighter : public QSyntaxHighlighter
     Q_OBJECT
 public:
     Highlighter(QTextDocument *parent = 0);
+    bool flag, prFlag;
 protected:
     void highlightBlock(const QString &text);
 private:
@@ -35,6 +36,12 @@ private:
     QTextCharFormat keywordFormat;
     QTextCharFormat singleLineCommentFormat;
     QTextCharFormat quotationFormat;
+
+     QRegExp commentStartExpression;
+     QRegExp commentEndExpression;
+
+
+
 };
 
 #endif

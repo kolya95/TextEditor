@@ -18,7 +18,6 @@ public:
     ~MainWindow();
 protected:
     void closeEvent(QCloseEvent *event);
-    void keyReleaseEvent ( QKeyEvent * e );
 public Q_SLOTS:
     void fileSave();
     void fileOpen();
@@ -43,5 +42,6 @@ private:
     void writeSettings();
 
 };
+
 
 #endif // MAINWINDOW_H

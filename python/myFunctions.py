@@ -28,3 +28,6 @@ def func(s):
 
 if __name__ == "__main__":
     pass
+
+def go_up():
+  _MyModule.actorCall(0,0,[],"")

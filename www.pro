@@ -17,13 +17,15 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     runner.cpp \
     highlighter.cpp \
-    kumirinterface.cpp
+    kumirinterface.cpp \
+    mytextedit.cpp
 
 HEADERS  += mainwindow.h \
     runner.h \
     highlighter.h \
     actorinterface.h \
     kumirinterface.h \
-    plugininterface.h
+    plugininterface.h \
+    mytextedit.h
 
 FORMS    += mainwindow.ui

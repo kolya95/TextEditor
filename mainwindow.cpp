@@ -66,6 +66,7 @@ MainWindow::MainWindow(QWidget *parent) :
     path = QDir::cleanPath(path);
     path = QDir::toNativeSeparators(path);
     k = new kumirInterface(path,this);
+
 }
 void MainWindow::closeEvent(QCloseEvent *event)
 {
@@ -90,11 +91,11 @@ void MainWindow::writeSettings()
 void MainWindow::fileSave ()
 {
     QString filter;
-    filter = tr("Text files (*.txt)");
+    filter = tr("Python files (*.py)");
     QString a;
     QString fn = QFileDialog::getSaveFileName (this, tr("Select file name"),
                                   "", filter,&a);
-    QString sufTxt = ".txt";
+    QString sufTxt = ".py";
     QRegExp suffix (".*" + sufTxt);
     if(a.compare (filter) == 0)
     {
@@ -119,7 +120,7 @@ void MainWindow::fileSave ()
 }
 void MainWindow::fileOpen ()
 {
-    const QString fn = QFileDialog::getOpenFileName (this,tr("Set file name"),"",tr("Text files (*.txt)"));
+    const QString fn = QFileDialog::getOpenFileName (this,tr("Set file name"),"",tr("Python files (*.py)"));
     if(fn.length ()>0)
     {
         QFile f(fn);
@@ -200,90 +201,13 @@ void MainWindow::Stop ()
     runner_->stop ();
 }
 
-void MainWindow::keyReleaseEvent( QKeyEvent * e )
-{
-    if(e->key()==Qt::Key_Return||e->key()==Qt::Key_Enter||e->key()==Qt::Key_Backspace||e->key()==Qt::Key_Tab)
-    {
-        *cur = ui->textEdit->textCursor();
-        if(cur->position()>1)
-        {
-            if ((e->key() == Qt::Key_Return) || (e->key() == Qt::Key_Enter))
-            {
-                int indent_ = 0;
-                QString txt = ui->textEdit->toPlainText();
-                if(txt[cur->position()-2]==':')
-                {
-                    indent_+=4;
-                }
-                QString line;
-                int i = cur->position()-2;
-                while(txt[i]!='\n')
-                {
-                    line.insert(0,txt[i]);
-                    i--;
-                    if(i<0)
-                        break;
-                }
-                for(i = 0; i<line.length();i++)
-                {
-                    if(line[i]!=' ')
-                        break;
-                    indent_++;
-                }
-                for(i = 0; i<indent_/4; i++)
-                {
-                    cur->insertText("    ");
-                }
-                return;
-            }
-        }
-        if(e->key() == Qt::Key_Tab)
-        {
-            int b = ui->textEdit->toPlainText().indexOf('\t');
-            if(b>=0)
-            {
-                cur->setPosition(b);
-                cur->deleteChar ();
-                cur->insertText("    ");
-            }
-        }
-        if(e->key()==Qt::Key_Backspace)
-        {
-            bool spaces = true;
-            int counter = 0;
-            ui->textEdit->undo();
-            *cur = ui->textEdit->textCursor();
-            QString text = ui->textEdit->toPlainText();
-            if(text[cur->position()-1]!=' ')
-            {
-                ui->textEdit->redo();
-                return;
-            }
-            ui->textEdit->redo();
-            text = ui->textEdit->toPlainText();
-            *cur = ui->textEdit->textCursor();
-            for(int k = cur->position();;k--)
-            {
-                if(k==0||text[k-1]=='\n')
-                    break;
-                counter++;
-                if(text[k-1]!=' ')
-                {
-                    spaces = false;
-                    break;
-                }
-            }
-            if(spaces&&counter>2)
-            {
-                for(int k = 0; k<3; k++)
-                    cur->deletePreviousChar();
 
-            }
 
-        }
-    }
-    else
-    {
-        return;
-    }
-}
+
+
+
+
+
+
+
+
