@@ -62,7 +62,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-    QString path = QCoreApplication::applicationDirPath()+"/../TextEditor/";
+    QString path = QCoreApplication::applicationDirPath()+"/../TextEditor/kumir-libs/plugins";
     path = QDir::cleanPath(path);
     path = QDir::toNativeSeparators(path);
     k = new kumirInterface(path,this);
