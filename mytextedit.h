@@ -22,7 +22,12 @@ public Q_SLOTS:
     void highlightCurrentLine();
     void updateLineNumberArea(const QRect &, int);
 
+
+    void ShiftTabSequency();
+
+
 private:
+
     QWidget *lineNumberArea;
 };
 

@@ -14,6 +14,14 @@ MyTextEdit::MyTextEdit(QWidget *parent) :
     connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
     connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
 
+
+
+    QAction* myShortcut = new QAction(this);
+    myShortcut->setShortcut(QKeySequence(Qt::SHIFT + Qt::Key_Tab));
+
+    connect(myShortcut, SIGNAL(triggered()), this, SLOT(ShitTabSequency()));
+    addAction(myShortcut);
+
     updateLineNumberAreaWidth(0);
     highlightCurrentLine();
 
@@ -22,6 +30,7 @@ void MyTextEdit::keyPressEvent(QKeyEvent *e)
 {
     if(e->key()==Qt::Key_Tab||e->key()==Qt::Key_Backspace)
     {
+
 
     }
     else
@@ -68,6 +77,7 @@ void MyTextEdit::keyReleaseEvent(QKeyEvent *e)
         }
         if(e->key() == Qt::Key_Tab)
         {
+
             if(cur->selectionStart()==cur->selectionEnd())
                 cur->insertText("    ");
             else
@@ -86,8 +96,12 @@ void MyTextEdit::keyReleaseEvent(QKeyEvent *e)
                 c->setPosition(index);
                 qDebug()<<c->position();
                 c->movePosition(QTextCursor::Right,QTextCursor::KeepAnchor, count+cur->selectedText().size());
+                count+=cur->selectedText().size();
+                int count2 = 0;
+
                 while(c->selectionEnd()<txt.size()&&txt[c->selectionEnd()]!=QChar::ParagraphSeparator&&txt[c->selectionEnd()]!='\n')
                 {
+                    count++;
                     if(!c->movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,1))
                     {
                         break;
@@ -96,19 +110,28 @@ void MyTextEdit::keyReleaseEvent(QKeyEvent *e)
                 QString t = c->selectedText();
                 qDebug()<<t;
                 if(t[0]!=QChar::ParagraphSeparator&&t[0]!='\n')
+                {
+                    count2+=4;
                     t.insert(0,"    ");
+                }
                 for(int i = 0; i < t.size(); i++)
                 {
                     if(t[i]=='\n'||t[i]==QChar::ParagraphSeparator)
                     {
                         t.insert(i+1,"    ");
                         i+=4;
+                        count2 +=4;
                     }
                 }
-                c->insertText(t);
 
+                c->insertText(t);
+                cur->setPosition(index);
+                qDebug()<<cur->selectionStart()<<cur->selectionEnd();
+                cur->movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,count2+count);
+                this->setTextCursor(*cur);
             }
         }
+
         if(e->key()==Qt::Key_Backspace)
         {
             bool spaces = true;
@@ -151,6 +174,75 @@ void MyTextEdit::keyReleaseEvent(QKeyEvent *e)
         return;
     }
     setCursorWidth(1);
+}
+void MyTextEdit::ShiftTabSequency()
+{
+    qDebug()<<"SHIFT+TAB";
+    QString txt = toPlainText();
+    QTextCursor* cur = new QTextCursor(this->textCursor());
+    QTextCursor* c = new QTextCursor(*cur);
+    c->setPosition(cur->selectionStart());
+    qDebug()<<c->position();
+    int index = cur->selectionStart();
+    int count = 0;
+    while(index>0&&txt[index]!=QChar::ParagraphSeparator&&txt[index]!='\n')
+    {
+        index--;
+        count++;
+    }
+    c->setPosition(index);
+    qDebug()<<c->position();
+    c->movePosition(QTextCursor::Right,QTextCursor::KeepAnchor, count+cur->selectedText().size());
+    count+=cur->selectedText().size();
+    int count2 = 0;
+
+    while(c->selectionEnd()<txt.size()&&txt[c->selectionEnd()]!=QChar::ParagraphSeparator&&txt[c->selectionEnd()]!='\n')
+    {
+        count++;
+        if(!c->movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,1))
+        {
+            break;
+        }
+    }
+    QString t = c->selectedText();
+    qDebug()<<t;
+    if(t[0]!=QChar::ParagraphSeparator&&t[0]!='\n')
+    {
+        for(int i = 0; i<4; i++)
+        {
+            if(t[0]!=' ')
+            {
+                break;
+            }
+            else
+            {
+                count2--;
+                t.remove(0,1);
+            }
+        }
+    }
+    for(int i = 0; i < t.size(); i++)
+    {
+        if(t[i]=='\n'||t[i]==QChar::ParagraphSeparator)
+        {
+            for(int j = 0; j<4; j++)
+            {
+                if(t[i+1]==' ')
+                {
+                    t.remove(i+1,1);
+                   count2--;
+                }
+                else break;
+            }
+        }
+    }
+
+    c->insertText(t);
+    cur->setPosition(index+1);
+    qDebug()<<cur->selectionStart()<<cur->selectionEnd();
+    cur->movePosition(QTextCursor::Right,QTextCursor::KeepAnchor,count2+count);
+    this->setTextCursor(*cur);
+
 }
 
 //*************

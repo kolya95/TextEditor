@@ -18,6 +18,7 @@ Runner::~Runner ()
 
     //delete[] programmText;
     //Py_Finalize();
+
 }
 
 void Runner::init (const QString& lines)
