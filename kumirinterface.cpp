@@ -5,6 +5,9 @@
 #include <QtCore>
 kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
 {
+    //****
+    int moduleId = 0;
+    //****
 
     qDebug()<<"asd";
     //QString path = QCoreApplication::applicationDirPath()+"/../TextEditor/";
@@ -42,6 +45,13 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
             }
             else
             {
+                QString fileName = QDesktopServices::storageLocation(QDesktopServices::TempLocation)+'/' + p->asciiModuleName().replace(" ","_")+".py";
+
+                qDebug()<<fileName;
+                QFile codeGenerateFile(fileName);
+                codeGenerateFile.open(QIODevice::WriteOnly);
+
+
                 p1->initialize(path+"/"+p->asciiModuleName().toLower());
                 qDebug()<<name<<"\n";
                 qDebug()<<p->asciiModuleName()<<"\n";
@@ -58,6 +68,51 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
                                      p->mainWidget(), SLOT(show()));
 
                 }
+
+                QStringList codeGenerator;
+                for(int i = 0; i < p->functionList().size(); i++)
+                {
+                    Shared::ActorInterface::Function func = p->functionList().at(i);
+                    QString funcName ="def ";
+                    funcName.append(func.asciiName);
+                    funcName.replace(" ", "_");
+                    funcName[3] = ' ';
+                    funcName.append('(');
+                    for(int k = 0; k < func.arguments.size(); k++)
+                    {
+
+                        funcName.append("arg");
+                        funcName.append(QString::number(k));
+                        if(k<func.arguments.size()-1)
+                            funcName.append(',');
+                    }
+                    funcName.append("):\n    ");
+                    funcName.append("_myModule.actor_call("); //0, 1, [arg1, arg1, arg3])
+
+                    funcName.append(QString::number(moduleId));
+                    funcName.append(", ");
+
+                    funcName.append(QString::number(func.id));
+                    funcName.append(", [");
+                    for(int k = 0; k < func.arguments.size(); k++)
+                    {
+
+                        funcName.append("arg");
+                        funcName.append(QString::number(k));
+                        if(k<func.arguments.size()-1)
+                            funcName.append(',');
+                    }
+                    funcName.append("])\n");
+                    qDebug()<<funcName;
+                    QTextStream ts(&codeGenerateFile);
+                    ts.operator <<(funcName);
+
+
+                    codeGenerator.append(funcName);
+                }
+                codeGenerateFile.close();
+
+                moduleId++;
             }
         }
     }

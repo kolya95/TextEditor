@@ -61,7 +61,7 @@ PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
 {
     int size = PyList_Size(args);
     kumirInterface * temp = kumirInterface::get();
-    int num = 0;
+    int num = moduleId;
     /*for(int i = 0; i < temp->instanced.size(); i++)
     {
         if(temp->instanced[i]->  == moduleId)
