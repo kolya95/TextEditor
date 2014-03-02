@@ -63,3 +63,12 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
     }
     ui->addToolBar(kumirToolBar);
 }
+kumirInterface* kumirInterface::get(const QString &path, QMainWindow *ui)
+{
+    static kumirInterface* a = NULL;
+    if(a == NULL)
+    {
+        a = new kumirInterface(path, ui);
+    }
+    return a;
+}

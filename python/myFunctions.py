@@ -21,13 +21,15 @@ class MyErrIO(io.IOBase):
 
 sys.stdout = MyIO();
 sys.stderr = MyErrIO();
+def call():
+   print("call method")
+def func(s):    
+   try:
+       a = compile(s, "", "exec")
+       return exec(a)
+   except BaseException as e:
+       sys.stderr.write(str(e))
 
-def func(s):
-    a = compile(s, "", "exec")
-    return exec(a)
 
 if __name__ == "__main__":
     pass
-
-def go_up():
-  _MyModule.actorCall(0,0,[],"")

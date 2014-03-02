@@ -2,7 +2,8 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "actorinterface.h"
+#include "kumirinterface.h"
 Runner::Runner(MainWindow *parent) :
     QThread(parent),
     mw_(parent)
@@ -11,13 +12,13 @@ Runner::Runner(MainWindow *parent) :
     Py_Initialize();
     PyEval_InitThreads();
     mutex_ = new QMutex;
+
+
 }
 Runner::~Runner ()
 {
     delete mutex_;
-
-    //delete[] programmText;
-    //Py_Finalize();
+    Py_Finalize();
 
 }
 
@@ -56,6 +57,70 @@ PyObject* Runner::py_call(PyObject *, PyObject *args)
     PyMem_Free(wcs);
     Py_INCREF(Py_None);
     return Py_None;
+}
+PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
+{
+    int size = PyList_Size(args);
+    kumirInterface * temp = kumirInterface::get();
+    int num = 0;
+    /*for(int i = 0; i < temp->instanced.size(); i++)
+    {
+        if(temp->instanced[i]->  == moduleId)
+        {
+            num = i;
+            break;
+        }
+    }*/
+    QVariantList argQVar;
+    Shared::ActorInterface::FunctionList functions = temp->instanced[num]->functionList();
+    for(int i = 0; i<functions.size(); i++)
+    {
+        Shared::ActorInterface::Function func = functions.at(i);
+        if(func.id == funcId)
+        {
+            if(func.arguments.size() == size)
+            {
+
+                for(int j = 0; j < size; j++)
+                {
+
+                    PyObject * pyArr = PyList_GetItem(args,j);
+                    Shared::ActorInterface::Argument argType = func.arguments.at(j);
+
+                    if(argType.type == Shared::ActorInterface::Bool)
+                    {
+                        bool Variable = PyLong_AsLong(pyArr);
+                        argQVar.append(QVariant(Variable));
+                    }
+                    else if (argType.type == Shared::ActorInterface::Int)
+                    {
+                        int Variable = PyLong_AsLong(pyArr);
+                        argQVar.append(QVariant(Variable));
+                    }
+                    else if (argType.type == Shared::ActorInterface::Real)
+                    {
+                        double Variable = PyLong_AsDouble(pyArr);
+                        argQVar.append(QVariant(Variable));
+                    }
+                    else if (argType.type == Shared::ActorInterface::Char || argType.type == Shared::ActorInterface::String)
+                    {
+                        wchar_t * wcs = PyUnicode_AsWideCharString(pyArr, NULL);
+                        QString Variable = QString::fromWCharArray(wcs);
+                        PyMem_Free(wcs);
+                        argQVar.append(QVariant(Variable));
+                    }
+                }
+                temp->instanced[num]->evaluate(funcId, argQVar);
+            }
+            else
+            {
+                /// error
+            }
+        }
+    }
+    for(int i = 0; i< argQVar.size(); i++)
+        qDebug()<<argQVar[i];
+    qDebug()<<moduleId<<funcId;
 }
 
 void Runner::pyImport()
@@ -104,6 +169,7 @@ static PyObject* init_functions()
        { "myPrint", Runner::pythonPrint, METH_VARARGS, ""},
        { "myErrPrint", Runner::pythonErrPrint, METH_VARARGS, ""},
         {"actor_call",Runner::py_call,METH_VARARGS,""},
+        //{"call", Runner::call, METH_VARARGS, "" },
        { NULL, NULL, 0, NULL }
     };
 
@@ -125,7 +191,8 @@ void Runner::run()
     mutex_->lock ();
     bool b = mustrun_;
     mutex_->unlock ();
-   if (b) {
+   if (b)
+   {
        wchar_t * buffer = (wchar_t*) malloc((1+programmText.length()) * sizeof(wchar_t));
        buffer[programmText.length()] = L'\0';
        programmText.toWCharArray(buffer);
@@ -149,10 +216,11 @@ void Runner::run()
             Py_DECREF(args);
        }
     }
-   else {
-        Py_EndInterpreter(interpretator);
+   else
+   {
+        //Py_EndInterpreter(interpretator);
 
         return;
    }
-   Py_EndInterpreter(interpretator);
+   //Py_EndInterpreter(interpretator);
 }

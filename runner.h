@@ -1,14 +1,15 @@
 #ifndef RUNNER_H
 #define RUNNER_H
+#include <Python.h>
 #include <QThread>
 #include <QtCore>
 #include <QtGui>
-#include <Python.h>
 #include "actorinterface.h"
 class Runner : public QThread
 {
     Q_OBJECT
 public:
+
     explicit Runner(class MainWindow *parent);
 
     void init(const QString& lines);
@@ -21,6 +22,9 @@ public:
     static PyObject* pythonPrint(PyObject*,PyObject* args);
     static PyObject* pythonErrPrint(PyObject*,PyObject* args);
     static PyObject* py_call(PyObject*,PyObject* args);
+
+    static PyObject* call(int moduleId, int funcId, PyObject* args);
+
     static void pyImport();
 Q_SIGNALS:
     void doOutput(const QString &);

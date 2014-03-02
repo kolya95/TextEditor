@@ -6,11 +6,10 @@
 #include "ui_mainwindow.h"
 class kumirInterface
 {
-    QVector<Shared::ActorInterface *> instanced;
-public:
     kumirInterface(const QString& path, QMainWindow* ui);
-
-
+public:
+    QVector<Shared::ActorInterface *> instanced;
+    static kumirInterface* get(const QString& path = "", QMainWindow* ui = NULL);
 };
 
 #endif // KUMIRINTERFACE_H
