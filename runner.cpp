@@ -50,13 +50,12 @@ PyObject* Runner::pythonErrPrint(PyObject *, PyObject *args)
 }
 PyObject* Runner::py_call(PyObject *, PyObject *args)
 {
-    PyObject * msg = PyTuple_GetItem(args, 0);
-    wchar_t * wcs = PyUnicode_AsWideCharString(msg, NULL);
-    QString qs = QString::fromWCharArray(wcs);
-    Q_EMIT RUN->doErrOutput(qs);
-    PyMem_Free(wcs);
-    Py_INCREF(Py_None);
-    return Py_None;
+    PyObject * modIdObj = PyTuple_GetItem(args, 0);
+    PyObject * funIdObj = PyTuple_GetItem(args, 1);
+    PyObject * argsObj  = PyTuple_GetItem(args, 2);
+    int moduleId = PyLong_AsLong(modIdObj);
+    int functionId = PyLong_AsLong(funIdObj);
+    return call(moduleId, functionId, argsObj);
 }
 PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
 {
@@ -121,6 +120,8 @@ PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
     for(int i = 0; i< argQVar.size(); i++)
         qDebug()<<argQVar[i];
     qDebug()<<moduleId<<funcId;
+    Py_INCREF(Py_None);
+    return Py_None;
 }
 
 void Runner::pyImport()
