@@ -31,6 +31,7 @@ Q_SIGNALS:
     void doErrOutput(const QString &);
     
 public Q_SLOTS:
+      void handleActorDone();
 
 private:
     PyObject * runModule;
@@ -44,9 +45,12 @@ private:
 
 
 
+
 //    static PyObject* init_functions();
 };
 
+static bool actorDone_ = false;
+static QMutex * actorDoneMutex_ = new QMutex();
 
 
 static PyObject* init_functions();

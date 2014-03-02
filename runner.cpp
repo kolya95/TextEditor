@@ -13,7 +13,8 @@ Runner::Runner(MainWindow *parent) :
     PyEval_InitThreads();
     mutex_ = new QMutex;
 
-
+    actorDoneMutex_ = new QMutex();
+    actorDone_ = false;
 }
 Runner::~Runner ()
 {
@@ -57,6 +58,13 @@ PyObject* Runner::py_call(PyObject *, PyObject *args)
     int functionId = PyLong_AsLong(funIdObj);
     return call(moduleId, functionId, argsObj);
 }
+void Runner::handleActorDone()
+{
+    actorDoneMutex_->lock();
+    actorDone_ = true;
+    actorDoneMutex_->unlock();
+}
+
 PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
 {
     int size = PyList_Size(args);
@@ -72,6 +80,7 @@ PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
     }*/
     QVariantList argQVar;
     Shared::ActorInterface::FunctionList functions = temp->instanced[num]->functionList();
+    temp->instanced[num]->connectSync(RUN, SLOT(handleActorDone()));
     for(int i = 0; i<functions.size(); i++)
     {
         Shared::ActorInterface::Function func = functions.at(i);
@@ -109,7 +118,50 @@ PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
                         argQVar.append(QVariant(Variable));
                     }
                 }
-                temp->instanced[num]->evaluate(funcId, argQVar);
+                Shared::EvaluationStatus evStat = temp->instanced[num]->evaluate(funcId, argQVar);
+                switch(evStat)
+                {
+                case Shared::ES_Async:
+                     while (true) {
+                     bool v;
+                     actorDoneMutex_->lock();
+                     v = actorDone_;
+                     actorDoneMutex_->unlock();
+                     if (v) break;
+                     msleep(1);
+                    }
+                    actorDone_ = false;
+                    break;
+                case Shared::ES_Error:
+                    Q_EMIT RUN->doErrOutput(temp->instanced[num]->errorText());
+                    break;
+                case Shared::ES_NoResult:
+                    break;
+                case Shared::ES_StackResult:
+                    PyObject * res = new PyObject();
+                    if(func.returnType == Shared::ActorInterface::Bool)
+                    {
+                        res = PyLong_FromLong(temp->instanced[num]->result().toBool());
+                        qDebug()<<temp->instanced[num]->result().toBool();
+                        Py_INCREF(res);
+                        return res;
+                    }
+                    else if (func.returnType == Shared::ActorInterface::Int)
+                    {
+
+                    }
+                    else if (func.returnType == Shared::ActorInterface::Real)
+                    {
+
+                    }
+                    else if (func.returnType == Shared::ActorInterface::Char || func.returnType == Shared::ActorInterface::String)
+                    {
+                    }
+                    break;
+
+
+                }
+
             }
             else
             {

@@ -21,8 +21,12 @@ class MyErrIO(io.IOBase):
 
 sys.stdout = MyIO();
 sys.stderr = MyErrIO();
+
+
 def call():
    print("call method")
+
+
 def func(s):    
    try:
        a = compile(s, "", "exec")
