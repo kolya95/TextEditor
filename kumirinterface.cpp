@@ -50,6 +50,7 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
                 qDebug()<<fileName;
                 QFile codeGenerateFile(fileName);
                 codeGenerateFile.open(QIODevice::WriteOnly);
+                codeGenerateFile.write("import _myModule\n");
 
 
                 p1->initialize(path+"/"+p->asciiModuleName().toLower());

@@ -145,6 +145,14 @@ void Runner::pyImport()
     PyObject * myFunctionsPath = PyUnicode_FromString(dir);
     PyList_Insert(sysPath, 0, myFunctionsPath);
 
+    const QByteArray tempPath = QDir::toNativeSeparators(
+                QDesktopServices::storageLocation(QDesktopServices::TempLocation)
+                ).toUtf8();
+    PyObject* pyTempPath = PyUnicode_FromString(tempPath.constData());
+    PyList_Insert(sysPath, 0, pyTempPath);
+
+
+
     //runModule = PyImport_ImportModule("myFunctions");
 
     RUN->runModule = PyImport_ImportModule("myFunctions");
