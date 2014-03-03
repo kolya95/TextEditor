@@ -90,6 +90,7 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
                             funcName.append(',');
                     }
                     funcName.append("):\n    ");
+                    funcName.append("return ");
                     funcName.append("_myModule.actor_call("); //0, 1, [arg1, arg1, arg3])
 
                     funcName.append(QString::number(moduleId));

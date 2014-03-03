@@ -140,6 +140,10 @@ PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
                     break;
                 case Shared::ES_NoResult:
                     break;
+                case Shared::ES_StackRezResult:
+                    break;
+                case Shared::ES_RezResult:
+                    break;
                 case Shared::ES_StackResult:
                     PyObject * res = new PyObject();
                     if(func.returnType == Shared::ActorInterface::Bool)
@@ -159,11 +163,13 @@ PyObject* Runner::call(int moduleId, int funcId, PyObject *args)
                     }
                     else if (func.returnType == Shared::ActorInterface::Char || func.returnType == Shared::ActorInterface::String)
                     {
+
                     }
                     break;
 
 
                 }
+                //actorDone_ = false;
 
             }
             else
@@ -247,6 +253,7 @@ static PyObject* init_functions()
 
 void Runner::run()
 {
+
     RUN = this;
     if(RUN->runModule == 0)
         return;
