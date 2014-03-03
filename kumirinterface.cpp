@@ -53,7 +53,7 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
                 codeGenerateFile.write("import _myModule\n");
 
 
-                p1->initialize(path+"/"+p->asciiModuleName().toLower());
+                p1->initialize(path+"/"+p->asciiModuleName().toLower().replace(' ', ""));
                 qDebug()<<name<<"\n";
                 qDebug()<<p->asciiModuleName()<<"\n";
                 instanced.push_back(p);
@@ -74,6 +74,8 @@ kumirInterface::kumirInterface(const QString& path, QMainWindow* ui)
                 for(int i = 0; i < p->functionList().size(); i++)
                 {
                     Shared::ActorInterface::Function func = p->functionList().at(i);
+                    if (func.asciiName.startsWith("@"))
+                        continue;
                     QString funcName ="def ";
                     funcName.append(func.asciiName);
                     funcName.replace(" ", "_");
