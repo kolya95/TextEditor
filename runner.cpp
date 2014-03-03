@@ -25,6 +25,9 @@ Runner::~Runner ()
 
 void Runner::init (const QString& lines)
 {
+    Q_FOREACH (Shared::ActorInterface* actor, kumirInterface::get()->instanced) {
+        actor->reset();
+    }
     mustrun_ = true;
     programmText = lines;
 }
